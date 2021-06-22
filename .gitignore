@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#Large project specific files.
+weekly_housing_market_data_most_recent.tsv
+combined_home_data.csv
+
+# FRED API key
+FRED_API_Key.txt
