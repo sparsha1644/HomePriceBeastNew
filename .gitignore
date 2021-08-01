@@ -132,6 +132,7 @@ dmypy.json
 weekly_housing_market_data_most_recent.tsv
 combined_home_data.csv
 merged_home_data_time_series.csv
+merged_home_data_time_series_sale_model.csv
 
 # FRED API key
 FRED_API_Key.txt
