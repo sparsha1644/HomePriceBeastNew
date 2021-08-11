@@ -53,78 +53,41 @@ id_unique = id_list.drop_duplicates(subset='id', keep="last")
 
 
 #############################################################################
-# Define Function
+# Import Packages
 #############################################################################
 
-# Author: Trevor Smith @ https://planspace.org/20150423-forward_selection_with_statsmodels/
+import pandas as pd
 
-def forward_selected(data, response):
-    
-    """Linear model designed by forward selection.
-   
-    ---------------------------------------------------
-    Parameters:
-   
-    data : pandas DataFrame with all possible predictors and response
-
-    response: string, name of response column in data
-    
-    ---------------------------------------------------
-    Returns:
-   
-    model: an "optimal" fitted statsmodels linear model
-           with an intercept
-           selected by forward selection
-           evaluated by adjusted R-squared
-    """
-    
-    remaining = set(data.columns)
-    
-    remaining.remove(response)
-    
-    selected = []
-   
-    current_score, best_new_score = 0.0, 0.0
-   
-    while remaining and current_score == best_new_score:
-        scores_with_candidates = []
-        for candidate in remaining:
-            formula = "{} ~ {} + 1".format(response,
-                                           ' + '.join(selected + [candidate]))
-            score = smf.ols(formula, data).fit().rsquared_adj
-            scores_with_candidates.append((score, candidate))
-        scores_with_candidates.sort()
-        best_new_score, best_candidate = scores_with_candidates.pop()
-        if current_score < best_new_score:
-            remaining.remove(best_candidate)
-            selected.append(best_candidate)
-            current_score = best_new_score
-    formula = "{} ~ {} + 1".format(response,
-                                   ' + '.join(selected))
-   
-    model = smf.o
+# Install Necessary Functions
+#pip install mlxtend
+from mlxtend.feature_selection import SequentialFeatureSelector as sfs
+from sklearn.linear_model import LinearRegression
 
 
 #############################################################################
-# Forward Selection
+# Backward Elimination
 #############################################################################
 
-for x in id_unique:
+for i in id_unique:
     
-    temp = data_reg[data_reg['id'] == id_unique.iloc[x]]  # Code is not recognizing 
-                                                          # the id_unique.iloc[x] portion
+    temp = data_reg[data_reg['id'] == id_unique.iloc[i]]  # NOTE: syntax is not recognizing the id_unique.iloc[i] portion
     
     x_temp = temp[["x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9",
                             "x10", "x11", "x12", "x13", "x14"]]
     
     y_temp = temp["y"]
     
-    store = forward_selected(x_temp, y_temp)  # run function based on current ID
+    # Initialize Model
+    lreg = LinearRegression()
     
-    #########################################################################
+    # Specify Parameters (NOTE: this pre-specifies how many features to select (k=4), which is not what the R code does...)
+    sfs1 = sfs(lreg, k_features=4, forward=False, verbose=1, scoring='neg_mean_squared_error')
     
-    # Ideally, insert code to store coefficients of each iteration here
+    # Fit Model
+    sfs1 = sfs1.fit(x_temp, y_temp)
     
-    #########################################################################
+    # Store Selected Features (NOTE: need help storing these for *each* iteration...)
+    feat_names = list(sfs1.k_feature_names_)
+
 
 
