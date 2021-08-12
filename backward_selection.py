@@ -2,7 +2,7 @@
     Utility for doing backward selection on an OLS model.
 """
 
-import numpy as np
+import numpy as np, pandas as pd
 from statsmodels.regression.linear_model import OLS
 from statsmodels.tools import add_constant
 
@@ -49,3 +49,15 @@ def backward_selection(X, y, criterion='bic', threshold=0, add_intercept=True, k
             return model
     
     return model
+
+def reg_predict(model, X):
+    """
+        Shim for making predictions using a fitted model and a (full) set of
+        predictor data. Re-orders columns and adds an intercept as needed.
+    """
+    model_vars = list(model.params.index)
+    if 'Intercept' in model_vars:
+        X = X.assign(Intercept=1)
+
+    X = X[model_vars]
+    return model.predict(X)
